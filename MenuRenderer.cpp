@@ -1,5 +1,4 @@
 #include "inc/MenuRenderer.h"
-
 #include "inc/Menu.h"
 #include "inc/SleepTimer.h"
 #include "inc/DataSource.h"
@@ -8,6 +7,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <SimpleKalmanFilter.h>
+
 
 SSD1306GasMenuRenderer::SSD1306GasMenuRenderer(SSD1306Wire* display) : SSD1306MenuRenderer(display)
 
@@ -37,34 +37,60 @@ SSD1306RunMenuRenderer::SSD1306RunMenuRenderer(SSD1306Wire* display, DataSource*
 }
 SimpleKalmanFilter simpleKalmanFilter(2, 2, 0.1);
 
+
 void SSD1306RunMenuRenderer::render(Menu* menu)
 {
   const float multiplier = 0.125F; //GAIN 1
   double sensor_val = m_dataSource->getDoubleValue();
+  double esti_val = simpleKalmanFilter.updateEstimate(sensor_val);
   Gas& selectedGas = m_gasManager->getSelectedGas();
+  int64_t startMicros = esp_timer_get_time();
 
   m_display->clear();
   m_display->setColor(WHITE);
-  m_display->setTextAlignment(TEXT_ALIGN_CENTER);
+  m_display->setTextAlignment(TEXT_ALIGN_LEFT);
   m_display->setFont(ArialMT_Plain_10);
-  m_display->drawString(100, 0, String(String(m_dataSource->getRawMiliVolts_battery() / 34.00, 0) + "%").c_str());
+  //date & time
+  struct tm timeinfo;
+  getLocalTime(&timeinfo, 10);
+
+  int64_t passed = esp_timer_get_time() - startMicros;
+  char dateString[30] = { 0 };
+  char timeString[30] = { 0 };
+  strftime(dateString, 30, "%b %d %y", &timeinfo);
+  strftime(timeString, 30, "%H:%M:%S", &timeinfo);
+
+  m_display->drawString(0, 0, String(timeString));
+  // end of date & time
+
   m_display->setTextAlignment(TEXT_ALIGN_CENTER);
-  m_display->drawString(64, 0, String(selectedGas.getName()).c_str());
+  //m_display->drawString(105, 0, String(String(m_dataSource->getRawMiliVolts_battery() / 34.00, 0) + "%").c_str());
+
+  m_display->drawString(105, 0, String("90%").c_str());
+  m_display->setTextAlignment(TEXT_ALIGN_CENTER);
+  //m_display->drawString(64, 0, String(selectedGas.getName()).c_str());
+  m_display->drawString(64, 0, "Mercury");
+
   m_display->drawLine(0, 14, 256, 14);
   m_display->setFont(ArialMT_Plain_24);
   if (sensor_val > 1005) {
     m_display->drawString(60, 18, "xxx");
   } else {
-    m_display->drawString(60, 18, String(simpleKalmanFilter.updateEstimate(sensor_val), 1).c_str());
+    m_display->drawString(60, 18, String(esti_val, 1).c_str());
+
   }
   m_display->setFont(ArialMT_Plain_10);
-  m_display->drawString(105, 30, "cc /m");
+  m_display->drawString(105, 30, "ppb");   //Unit
   m_display->drawLine(0, 49, 256, 49);
-  m_display->drawString(64, 51,  String(String(m_dataSource->getRawMiliVolts()) + "mV").c_str());
+  //m_display->drawString(64, 51,  String(String(m_dataSource->getRawMiliVolts()) + "mV").c_str());
+  m_display->drawString(40, 51,  String(String(m_dataSource->getTemp()) + " C").c_str());
+  m_display->drawString(90, 51,  String(String(m_dataSource->getHum()) + " %").c_str());
+  Serial.print(String(timeString));
+  Serial.print((","+String(m_dataSource->getTemp()) + ",C," + String(m_dataSource->getHum()) + ",%," + String(esti_val, 1) + ",ppb,"+String(m_dataSource->getRawMiliVolts())+"mV\n").c_str());
 
   m_display->display();
-  
   delay(100);
+
 }
 
 ///////////////////////////

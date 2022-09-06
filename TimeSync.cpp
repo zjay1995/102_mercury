@@ -142,8 +142,8 @@ void TimeSync::NTPSyncTask_run()
 
 void TimeSync::onParamChange(String param, String value)
 {
-  m_wifiSsid = "PID-2.4";
-  m_wifiPassword = "Pid@nalyzer21";
+  m_wifiSsid = "22CDPro";
+  m_wifiPassword = "00525508";
 }
 
 

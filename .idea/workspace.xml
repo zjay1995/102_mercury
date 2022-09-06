@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="CMakePresetLoader"><![CDATA[{
   "useNewFormat": true
 }]]></component>
@@ -37,7 +40,11 @@
     "WebServerToolWindowFactoryState": "false",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "last_opened_file_path": "C:/Users/zjwa1/Documents/PID Analyzer/demo_102_mercury/102_mercury"
+    "last_opened_file_path": "C:/Users/zjwa1/Documents/PID Analyzer/demo_102_mercury/102_mercury",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -48,7 +55,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1662439807351</updated>
-      <workItem from="1662439809681" duration="1000" />
+      <workItem from="1662439809681" duration="6916000" />
     </task>
     <servers />
   </component>

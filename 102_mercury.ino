@@ -2,7 +2,7 @@
 #include <SSD1306.h>
 #include <U8g2lib.h>
 #include <Wire.h>
-
+#include "Adafruit_SHT4x.h"
 #include <WiFi.h>
 #include <vector>
 
@@ -22,12 +22,14 @@ using namespace std;
 #define USE_SSD1306_DISPLAY
 //#define USE_SSD1327_DISPLAY
 
+Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
 #define MAX_SCCM 5000
 
 #define wifi_ssid "22CDPro"
 #define wifi_password "00525508"
 
+//BluetoothSerial SerialBT;
 
 GasManager g_gasManager(1.73231201, -2.054456771, 1, 0, 0);
 
@@ -72,15 +74,32 @@ void IRAM_ATTR dummyTouchISR() {}
 
 void setup() {
   Serial.begin(115200);
+
+    Serial.println("Adafruit SHT4x test");
+  if (! sht4.begin()) {
+    Serial.println("Couldn't find SHT4x");
+    while (1) delay(1);
+  }
+  sht4.setPrecision(SHT4X_HIGH_PRECISION);
+  sht4.setHeater(SHT4X_NO_HEATER);
+
+  
   // DEEP-SLEEP init
   pinMode(25, OUTPUT);
+  
+//  SerialBT.begin("ESP32_102"); //Bluetooth device name
+  Serial.println("The device started, now you can pair it with bluetooth!");
 
   //esp_sleep_enable_ext1_wakeup(0x8004, ESP_EXT1_WAKEUP_ANY_HIGH);
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, LOW);
   // ADC
   ads1115.begin();
   ads1115.setGain(GAIN_ONE);
-  AnalogSourceInput* ads1115AnalogSourceInput = new ADS1115AnalogSourceInput(&ads1115);
+
+  AnalogSourceInput* ads1115AnalogSourceInput = new ADS1115AnalogSourceInput(&ads1115,&sht4);
+
+
+  
   DataSource* dataSource = new DataSource(&g_gasManager, ads1115AnalogSourceInput);
 
   // Gas Manager

@@ -7,6 +7,7 @@
 #include "ConfigurationManager.h"
 #include "Globals.h"
 #include <EEPROM.h>
+#include "BluetoothSerial.h"
 
 
 class Gas
@@ -72,6 +73,7 @@ public:
     double calculateSLM(double voltage) {
         //double val = (voltage*voltage*m_slope + voltage*m_secondp + m_intercept ) * getSelectedGas().getThermalConductivity();
         double val = (voltage*m_secondp + m_intercept ) / getSelectedGas().getThermalConductivity();
+        //SerialBT.print((String(val, 0) + ",ppb\n").c_str());
         //Serial.println(String(m_secondp));
         //Serial.println("calculateSLM " + String(val) + " " + String(voltage) + " " + String(getSelectedGas().getThermalConductivity()) + " " + String(m_slope) + " " + String(m_intercept));
         return val < 0 ? 0 : val;
